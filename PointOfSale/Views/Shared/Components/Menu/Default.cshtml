@@ -1,0 +1,70 @@
+﻿@using PointOfSale.Models;
+@model MenuView;
+@{
+    Layout = null;
+}
+
+@{
+    string menucollapse = "menucollapse";
+    int correlative = 1;
+}
+
+@foreach (var menu in Model.Menus)
+{
+    @if (menu.Icon != null && menu.Controller != null)
+    {
+        <li class="has-sub">
+            <a class="sidenav-item-link" href="@($"/{menu.Controller}/{menu.PageAction}")">
+                <i class="@menu.Icon"></i>
+                <span class="nav-text">@menu.Description</span>
+            </a>
+        </li>
+    }
+    else
+    {
+        <li class="has-sub">
+            <a class="sidenav-item-link" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="@($"#{menucollapse}{correlative}")"
+               aria-expanded="false" aria-controls="dashboard">
+                <i class="@menu.Icon"></i>
+                <span class="nav-text">@menu.Description</span> <b class="caret"></b>
+            </a>
+            <ul class="collapse " id="@($"{menucollapse}{correlative}")" data-bs-parent="#sidebar-menu">
+                <div class="sub-menu">
+
+                    @foreach (var submenu in menu.SubMenus.OrderBy(_ => _.Description))
+                    {
+                    <li class="">
+                        <a class="sidenav-item-link" href="@($"/{submenu.Controller}/{submenu.PageAction}")">
+                            <span class="nav-text">@submenu.Description</span>
+                        </a>
+                    </li>
+                    }
+                </div>
+            </ul>
+        </li>
+    }
+
+    correlative = correlative + 1;
+
+}
+<br />
+@{
+    var buttonClass = Model.TurnoAbierto ? "#34ff34" : "#ff5050";
+    var buttonText = Model.TurnoAbierto ? "Cerrar Turno" : "Abrir Turno";
+}
+
+<li class="has-sub">
+    <a class="sidenav-item-link" href="#" id="btnAbrirMovimientoCaja">
+        <i class="mdi mdi-cash-multiple"></i>
+        <span class="nav-text">Movimiento Caja</span>
+    </a>
+</li>
+
+<br />
+
+<li class="has-sub">
+    <a class="sidenav-item-link" href="#" id="btnAbrirCerrarTurno">
+        <i class="mdi mdi-clock-outline" style="color:@buttonClass"></i>
+        <span class="nav-text">@buttonText</span>
+    </a>
+</li>

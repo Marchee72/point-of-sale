@@ -1,0 +1,236 @@
+﻿@{
+    ViewData["Title"] = "Formas de Pago";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section StylesPOS {
+
+    <link href="~/plugins/data-tables/datatables.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/plugins/data-tables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/plugins/data-tables/responsive.datatables.min.css" rel="stylesheet">
+
+
+}
+<style>
+    .factura-pendiente {
+        background-color: yellow;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-12">
+
+        <div class="card card-default">
+
+
+            <div class="card-header card-header-border-bottom d-flex align-items-center">
+                <div>
+                    <h4>Gastos</h4>
+                </div>
+                <div class="ms-auto bd-highlight d-flex flex-column align-items-end">
+                    <div>
+                        <button class="btn btn-success btn-sm" id="btnNew"><span class="mdi mdi-note-plus me-1"></span>Nuevo Gasto</button>
+                    </div>
+                    <div class="form-group mt-2" id="divSwitchVisionGlobalGastos" style=" margin-bottom: 0px; display: none">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="SwitchVisionGlobalGastos">
+                            <label class="form-check-label" for="SwitchVisionGlobalGastos">Vision Global</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body" style="margin-top: -30px;">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="tbData" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Gasto</th>
+                                    <th>Tipo de Gasto</th>
+                                    <th>Factura</th>
+                                    <th>Fecha</th>
+                                    <th>Comentario</th>
+                                    <th>Estado</th>
+                                    <th>Importe</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card card-default">
+            <div class="card-header card-header-border-bottom">
+                <div class="">
+                    <h4>Tabla Dinamica</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div id="wdr-component"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grid Modal -->
+<div class="modal fade" id="modalData" tabindex="-1" role="dialog" aria-labelledby="exampleModalGrid" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalGridTitle">Nuevo Gasto</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" value="0" id="txtIdGastos">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div class="form-row">
+                                <div class="form-group col-sm-5">
+                                    <label for="cboTipoDeGastoEnGasto">Tipo de Gasto</label>
+                                    <select class="form-control form-control-sm input-validate" id="cboTipoDeGastoEnGasto">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <label for="txtGasto">Tipo</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtGasto" name="Gastos" disabled>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="cboEstado">Estado</label>
+                                    <select class="form-control form-control-sm" id="cboEstado">
+                                        <option value="0">Pagado</option>
+                                        <option value="1">Pendiente</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label for="cboTipoFactura">Tipo</label>
+                                    <select class="form-control form-control-sm" id="cboTipoFactura" name="Tipo Factura">
+                                        <option value=""></option>
+                                        <option value="0">A</option>
+                                        <option value="1">B</option>
+                                        <option value="2">C</option>
+                                        <option value="3">X</option>
+                                        <option value="4">Presu.</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-10">
+                                    <label for="txtNroFactura">Nro Factura</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control form-control-sm" id="txtNroFactura" name="Factura">
+                                        <div class="input-group-text">
+                                            <input type="checkbox" id="cbxFacturaPendiente" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Marca la Factura como Pendiente">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label for="txtIva">IVA</label>
+                                    <select class="form-control form-control-sm" id="txtIva">
+                                        <option value="0">0 %</option>
+                                        <option value="10.5">10,5 %</option>
+                                        <option value="21">21 %</option>
+                                        <option value="27">27 %</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="txtImporte">Importe</label>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" step="any" class="form-control form-control-sm input-validate" id="txtImporte" name="Importe">
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="cboUsuario">Usuario</label>
+                                    <select class="form-control form-control-sm" id="cboUsuario">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-4">
+                                    <label for="txtImporteIva">Importe IVA</label>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" step="any" class="form-control form-control-sm" id="txtImporteIva" name="Importe IVA" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-5">
+                                    <label for="txtImporteSinIva">Importe s/ IVA</label>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" step="any" class="form-control form-control-sm" id="txtImporteSinIva" name="Importe sin IVA" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-12">
+                                    <label for="txtComentario">Comentario</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtComentario" name="Comentario">
+                                </div>
+                            </div>
+                            <div class="form-row" id="divModif">
+                                <div class="form-group col-sm-6">
+                                    <label for="txtModificado">Fecha Modificado</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtModificado" name="fechaModificado" readonly>
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="txtModificadoUsuario">Por:</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtModificadoUsuario" name="usuarioModificado" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/plugins/data-tables/jquery.datatables.min.js"></script>
+    <script src="~/plugins/data-tables/datatables.bootstrap4.min.js"></script>
+    <script src="~/plugins/data-tables/datatables.responsive.min.js"></script>
+
+
+    <script src="~/plugins/data-tables/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.bootstrap4.min.js"></script>
+    <script src="~/plugins/data-tables/jszip.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.html5.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.print.min.js"></script>
+
+    <link href="https://cdn.webdatarocks.com/latest/webdatarocks.min.css" rel="stylesheet" />
+    <script src="https://cdn.webdatarocks.com/latest/webdatarocks.toolbar.min.js"></script>
+    <script src="https://cdn.webdatarocks.com/latest/webdatarocks.js"></script>
+
+    <script src="~/js/views/gastos.js"></script>
+}
+

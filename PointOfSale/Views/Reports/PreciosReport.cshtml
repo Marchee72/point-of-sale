@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "PreciosReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section StylesPOS{
+    <link href="~/plugins/data-tables/datatables.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/plugins/data-tables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/plugins/data-tables/responsive.datatables.min.css" rel="stylesheet">
+    <link href="~/plugins/jquery-ui/jquery-ui.css" rel="stylesheet">
+
+}
+
+<div class="card card-default">
+    <div class="card-header card-header-border-bottom d-flex align-items-center">
+        <h4 class="col-md-4">Reporte de Precios</h4>
+    </div>
+    <div class="card-body">
+
+        <div class="form-row">
+            <div class="form-group col-sm-3">
+                <label for="cboCategory">Categoria</label>
+                <select class="form-control" id="cboCategory">
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="txtModificadoDate">Fecha de Modificacion</label>
+                <input type="text" class="form-control" id="txtModificadoDate">
+            </div>
+            <div class="form-group col-sm-1" style="align-self: end;">
+                <button class="btn btn-success" type="button" id="btnSearch"><i class="mdi mdi-magnify"></i> Buscar</button>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center  search-date">
+            <a href="#" onclick="setToday()">Hoy</a>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="tbdata" class="table table-striped" cellspacing="0" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Categoria</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Fecha Modificado</th>
+                            <th scope="col">Por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/plugins/data-tables/jquery.datatables.min.js"></script>
+    <script src="~/plugins/data-tables/datatables.bootstrap4.min.js"></script>
+    <script src="~/plugins/data-tables/datatables.responsive.min.js"></script>
+
+
+    <script src="~/plugins/data-tables/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.bootstrap4.min.js"></script>
+    <script src="~/plugins/data-tables/jszip.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.html5.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.print.min.js"></script>
+
+
+    <script src="~/plugins/jquery-ui/jquery-ui.js"></script>
+
+    <script src="~/js/views/ReportsPrecios.js"></script>
+
+    }
+

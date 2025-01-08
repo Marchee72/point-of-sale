@@ -1,0 +1,369 @@
+﻿@{
+    ViewData["Title"] = "Pedidos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section StylesPOS {
+
+    <link href="~/plugins/data-tables/datatables.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/plugins/data-tables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="~/plugins/data-tables/responsive.datatables.min.css" rel="stylesheet">
+}
+
+<style>
+    #tablaContainerRecibidos td:nth-last-child(-n+3) {
+        border: 2.3px dotted lightslategray;
+    }
+
+    #tablaContainer td:last-child {
+        border: 2.3px dotted lightslategray;
+    }
+
+    #tablaContainer > table,
+    #tablaContainerRecibidos > table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #tablaContainer > table th,
+        #tablaContainer > table td,
+        #tablaContainerRecibidos > table th,
+        #tablaContainerRecibidos > table td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        #tablaContainer > table tr:nth-child(even),
+        #tablaContainerRecibidos > table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #tablaContainer > table td.editable,
+        #tablaContainerRecibidos > table td.editable {
+            cursor: pointer;
+        }
+
+            #tablaContainer > table td.editable:focus,
+            #tablaContainerRecibidos > table td.editable:focus,
+            #tablaContainerRecibidos > table td.editableText:focus {
+                outline: 1px solid blue;
+            }
+</style>
+
+<div class="row">
+    <div class="col-sm-12">
+
+        <div class="card card-default">
+            <div class="card-header card-header-border-bottom">
+                <div>
+                    <h4>Pedidos</h4>
+                </div>
+                <div class="ms-auto bd-highlight">
+                    <button class="btn btn-success btn-sm" id="btnNew"><span class="mdi mdi-note-plus me-1"></span>Nueva Pedido</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="tbData" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Proveedor</th>
+                                    <th>Fecha</th>
+                                    <th>Importe</th>
+                                    <th>Fecha Recibido</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grid Modal -->
+<div class="modal fade" id="modalData" tabindex="-1" role="dialog" data-bs-backdrop="static">
+    <div class="modal-dialog  modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalGridTitle">Detalle Pedidos</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <input type="hidden" value="0" id="txtIdPedido">
+                <div class="row" id="panelProductos">
+                    <div class="col-md-5">
+                        <div class="form-row">
+                            <div class="form-group col-sm-8" >
+                                <label for="cboProveedor">Proveedor</label>
+                                <select class="form-control form-control-sm input-validate" id="cboProveedor" style="background-color: beige">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+ 
+                            <div class="ms-auto bd-highlight" style="align-content: center;">
+                                <button class="btn btn-success btn-sm" id="btnGenerar">Generar</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-6" >
+                                <label for="cboEstado">Estado</label>
+                                <select class="form-control form-control-sm" id="cboEstado">
+                                    <option value="0">Cancelado</option>
+                                    <option value="1" selected>Iniciado</option>
+                                    <option value="2">Enviado</option>
+                                    <option value="3" id="optionRecibido" style="display:none">Recibido</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-sm-6" style="margin-bottom: 2px;">
+                                <label for="txtImporteEstimado">Estimado</label>
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm" id="txtImporteEstimado" name="Importe Estimado" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-12">
+                                <label for="txtComentario">Comentario</label>
+                                <input type="text" class="form-control form-control-sm" id="txtComentario" name="Comentario">
+                            </div>
+                        </div>
+                        <div class="form-row" id="divFechaCerrado" style="margin-top: 15px;display: none;">
+                            <div class="form-group col-sm-6">
+                                <label for="txtCerrado">Fecha Cerrado</label>
+                                <input type="text" class="form-control form-control-sm" id="txtCerrado" name="fechaCerrado" readonly>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="txtCerradoUsuario">Por:</label>
+                                <input type="text" class="form-control form-control-sm" id="txtCerradoUsuario" name="CerradoUsuario" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div id="tablaContainer">
+                            <table id="tablaProductos">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Costo</th>
+                                        <th>Stock</th>
+                                        <th id="lblCantPedir">Cantidad a Pedir</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-12" id="panelGenerarMensaje" style="display:none;">
+
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-info" id="btnVolver">Volver</button>
+                        <button class="btn btn-secondary" id="btnCopiar">Copiar al portapapeles</button>
+                    </div>
+
+                    <br />
+                    <div style="text-align: center;">
+                        <label id="labelTabla"></label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Grid Modal -->
+<div class="modal fade" id="modalDataRecibido" tabindex="-1" role="dialog" aria-labelledby="exampleModalGrid" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalGridTitle">Pedido a Recibir</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <input type="hidden" value="0" id="txtIdPedidoRecibido">
+                <input type="hidden" value="0" id="txtIdProveedor">
+                <div class="row">
+                    <div class="col-sm-5">
+
+                        <div class="form-row">
+                            <div class="form-group col-sm-5" style="margin-bottom: 0px;">
+                                <label for="txtProveedorRecibido">Proveedor</label>
+                                <input type="text" class="form-control form-control-sm" id="txtProveedorRecibido" name="Proveedor" disabled>
+
+                            </div>
+                            <div class="form-group col-sm-4" style="margin-bottom: 0px;">
+                                <label for="txtImporteRecibido">Total Factura</label>
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control form-control-sm input-validate" id="txtImporteRecibido" name="Importe" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="txtCantidadProductos">Productos</label>
+                                <input type="text" class="form-control form-control-sm" id="txtCantidadProductos" name="Cantidad Productos" disabled>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-6">
+                                <label for="txtFechaCreacion">Fecha</label>
+                                <input type="text" class="form-control form-control-sm" id="txtFechaCreacion" name="Fecha" disabled>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="txtCreationUser">Creado Por</label>
+                                <input type="text" class="form-control form-control-sm" id="txtCreationUser" name="Creado Por" disabled>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-2">
+                                <label for="cboTipoFactura">Tipo</label>
+                                <select class="form-control form-control-sm" id="cboTipoFactura" name="Tipo Factura">
+                                    <option value=""></option>
+                                    <option value="0">A</option>
+                                    <option value="1">B</option>
+                                    <option value="2">C</option>
+                                    <option value="3">X</option>
+                                    <option value="4">Presu.</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="txtImporteEstimado">Nro Factura</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control form-control-sm" id="txtNroFactura" name="Factura">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" id="cbxFacturaPendiente" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Marca la Factura como Pendiente">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="cboEstadoFactura">Estado</label>
+                                <select class="form-control form-control-sm" id="cboEstadoFactura">
+                                    <option value="0">Pagado</option>
+                                    <option value="1">Pendiente</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-3">
+                                <label for="txtIva">IVA</label>
+                                <select class="form-control form-control-sm" id="txtIva">
+                                    <option value="0">0 %</option>
+                                    <option value="10.5">10,5 %</option>
+                                    <option value="21">21 %</option>
+                                    <option value="27">27 %</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="txtImporteIva">Importe IVA</label>
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control form-control-sm" id="txtImporteIva" name="Importe IVA" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="txtImporteSinIva">Importe s/ IVA</label>
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control form-control-sm" id="txtImporteSinIva" name="Importe sin IVA" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-12">
+                                <label for="txtComentarioRecibido">Comentario</label>
+                                <input type="text" class="form-control form-control-sm" id="txtComentarioRecibido" name="Comentario">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-7">
+                        <div id="tablaContainerRecibidos">
+                            <h3>Pedido:</h3>
+                            <br />
+                            <table id="tablaProductosRecibidos">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Costo</th>
+                                        <th>Cant. Pedida</th>
+                                        <th>Cant. Recibida</th>
+                                        <th>Vencimiento</th>
+                                        <th>Lote</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnCerrarPedido">Cerrar Pedido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script src="~/plugins/data-tables/jquery.datatables.min.js"></script>
+    <script src="~/plugins/data-tables/datatables.bootstrap4.min.js"></script>
+    <script src="~/plugins/data-tables/datatables.responsive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+    <script src="~/plugins/data-tables/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.bootstrap4.min.js"></script>
+    <script src="~/plugins/data-tables/jszip.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.html5.min.js"></script>
+    <script src="~/plugins/data-tables/buttons.print.min.js"></script>
+    <script src="~/plugins/moment.js"></script>
+
+    <script src="~/js/views/Pedido.js"></script>
+}
+

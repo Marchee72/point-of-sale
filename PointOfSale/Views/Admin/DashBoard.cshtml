@@ -1,0 +1,468 @@
+﻿@{
+    ViewData["Title"] = "DashBoard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section StylesPOS {
+    <link href="~/plugins/jquery-ui/jquery-ui.css" rel="stylesheet">
+}
+
+<style>
+    @@media all and (max-width: 770px) and (min-width: 150px) {
+        #rowFilterDia {
+            justify-content: center;
+        }
+    }
+
+    .bootstrap-datetimepicker-widget tr:hover {
+        background-color: #808080;
+    }
+</style>
+
+<!-- Page Heading -->
+<div class="row col-md-12">
+
+    <div>
+        <h1 class="h3 mb-0">Dashboard</h1>
+    </div>
+    <div class="ms-auto bd-highlight">
+        <button class="btn btn-success btn-sm" id="btnNuevoGasto"><i class="mdi mdi-cash-multiple me-1"></i>&nbsp;Nuevo Gasto</button>
+    </div>
+</div>
+
+<!-- Dias Semana Mes -->
+<div class="row mt-3 col-md-12" id="rowFilterDia">
+    <div class="ms-3 h4">
+        <input type="radio" name="radioButton" id="rbtnDia" onclick="changeChart(0)">
+        <label for="rbtnDia">
+            Dia
+        </label>
+    </div>
+    <div class="ms-3 h4">
+        <input type="radio" name="radioButton" id="rbtnSemana" onclick="changeChart(1)" checked>
+        <label for="rbtnSemana">
+            Semana
+        </label>
+    </div>
+    <div class="ms-3 me-5 h4">
+        <input type="radio" name="radioButton" id="rbtnMes" onclick="changeChart(2)">
+        <label for="rbtnMes">
+            Mes
+        </label>
+    </div>
+
+    <div class="h6" style="align-self: center;">
+        <label id="idTextFilter">
+
+        </label>
+    </div>
+
+    <div class="form-group ms-auto" id="divSwitchVisionGlobal" style="display:none; margin-bottom: 0px">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="switchVisionGlobal">
+            <label class="form-check-label" for="switchVisionGlobal">Vision Global</label>
+        </div>
+    </div>
+</div>
+
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Total de ventas -->
+    <div class="col-xl-2 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="ms-3">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Ventas
+                    </div>
+
+                    <div class="">
+                        <div class="h5 font-weight-bold" id="txtTotalSale" style="color:gray"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total de Clientes -->
+    <div class="col-xl-2 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="ms-3">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                        Clientes
+                    </div>
+
+                    <div class="">
+                        <div class="h5 font-weight-bold" id="txtCantidadClientes" style="color:gray"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total de Gastos -->
+    <div class="col-xl-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body" style="padding-bottom: 3px;">
+                <div class="col me-2">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                        Gastos
+                    </div>
+                    <div class="row" style="padding-left: 15px;">
+                        <div class="h5 mb-0 font-weight-bold" id="txtTotalGastos" style="color:gray; padding-right: 20px;"></div>
+
+                        <table border="0">
+                            <thead>
+                                <tr style="text-align: center;">
+                                    <th>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted"> &nbsp; Proveedores &nbsp;</p>
+                                    </th>
+                                    <th>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted">+</p>
+                                    </th>
+                                    <th>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted">&nbsp; Sueldos &nbsp;</p>
+                                    </th>
+                                    <th>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted">+</p>
+                                    </th>
+                                    <th>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted"> &nbsp; Gastos &nbsp; </p>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="text-align: center;">
+                                    <td>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted" id="gastosProvvedoresTexto"></p>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted" id="gastosSueldosTexto"></p>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <p style="font-style: italic; font-size:12px;" class="text-muted" id="gastoTexto"></p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total de Ganancias -->
+    <div class="col-xl-2 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="ms-3">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                        Ganancia
+                    </div>
+
+                    <div class="">
+                        <div class="h5 font-weight-bold" id="txtGanancia" style="color:gray"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtro -->
+    <div class="col-xl-3 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                            Filtro
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+
+                            <div class="input-group mb-3 col-md-12">
+                                <input type="text" class="form-control form-control-sm " id="txtDay">
+                                <button class="btn btn-info btn-sm" type="button" id="btnSearch"><i class="mdi mdi-filter me-1"></i> Aplicar</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+<!-- Content Row -->
+
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3">
+                <h6>Ventas</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                @*                <div class="chart-area" style="height: 350px !important;">
+                <canvas id="charSales"></canvas>
+                </div>*@
+                <div id="chartVentas"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos más vendidos-->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3">
+                <h6>Top Venta de Productos <i class="mdi mdi-fire mdi-24px"></i></h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="input-group input-group-sm mb-3 col-md-12">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="cboCategory">Categoria</label>
+                    </div>
+                    <select class="form-control form-control-sm" id="cboCategory">
+                    </select>
+                </div>
+                <div class="col-md-12" id="chartTopSeller">
+                    <div class="chart-pie" style="text-align: -webkit-center;">
+                        <table border="0">
+                            <tbody id="tableTopSeller">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card-body pb-0">
+        <div class="card shadow">
+            <div class="card-body pb-0">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div id="charTipoVentas"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div id="charGastosProveedor"></div>
+                    </div>
+                    @*
+                    <div class="col-md-3">
+                    <div id="charGastosSueldos"></div>
+                    </div> *@
+
+                    <div class="col-md-4">
+                        <div id="charGastos"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row" id="divGraficosGlobales" style="display:none">
+    <div class="card-body" style="padding-top: 0;">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div id="charTipoVentasGlobal"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div id="charGastosProveedorGlobal"></div>
+                    </div>
+                    @*
+                    <div class="col-md-3">
+                    <div id="charGastosSueldos"></div>
+                    </div> *@
+
+                    <div class="col-md-4">
+                        <div id="charGastosGlobal"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Grid Modal Gastos -->
+<div class="modal fade" id="modalNuevoGasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalGrid" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalGridTitle">Ingresar Nuevo Pago </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div class="form-row">
+                                <div class="form-group col-sm-5">
+                                    <label for="txtNombrePago">Tipo</label>
+                                    <select class="form-control form-control-sm input-validate-gasto" id="cboTipoDePago" style="background-color: beige">
+                                        <option value="1">Gasto</option>
+                                        <option value="2">Pago de Proveedor</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="cboEstado">Estado</label>
+                                    <select class="form-control form-control-sm" id="cboEstado" style="background-color: beige;">
+                                        <option value="0">Pagado</option>
+                                        <option value="1">Pendiente</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row pago-gasto">
+                                <div class="form-group col-sm-6">
+                                    <label for="cboTipoDeGastoEnGasto">Tipo de Gasto</label>
+                                    <select class="form-control form-control-sm input-validate-gasto" id="cboTipoDeGastoEnGasto" style="background-color: beige">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="txtGasto">Tipo</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtGasto" name="Gastos" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row pago-proveedor" style="display: none;">
+                                <div class="form-group col-sm-4">
+                                    <label for="txtNombrePago">Nombre</label>
+                                    <select class="form-control form-control-sm input-validate" id="cboProveedor" style="background-color: beige">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="txtCuilPago">Cuil</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtCuilPago" name="Cuil" disabled>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="txtDireccionPago">Direccion</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtDireccionPago" name="Direccion" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label for="cboTipoFactura">Tipo</label>
+                                    <select class="form-control form-control-sm" id="cboTipoFactura" name="Tipo Factura">
+                                        <option value=""></option>
+                                        <option value="0">A</option>
+                                        <option value="1">B</option>
+                                        <option value="2">C</option>
+                                        <option value="3">X</option>
+                                        <option value="4">Presu.</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-10">
+                                    <label for="txtNroFactura">Nro Factura</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control form-control-sm" id="txtNroFactura" name="Factura">
+                                        <div class="input-group-text">
+                                            <input type="checkbox" id="cbxFacturaPendiente" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Marca la Factura como Pendiente">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label for="txtIva">IVA</label>
+                                    <select class="form-control form-control-sm" id="txtIva">
+                                        <option value="0">0 %</option>
+                                        <option value="10.5">10,5 %</option>
+                                        <option value="21">21 %</option>
+                                        <option value="27">27 %</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label for="txtImporte">Importe</label>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" step="any" class="form-control form-control-sm input-validate-proveedor" style="background-color: beige" id="txtImporte" name="Importe">
+                                    </div>
+                                </div>
+
+                                <div class="form-group offset-1 col-sm-5 pago-gasto">
+                                    <label for="cboUsuario">Usuario</label>
+                                    <select class="form-control form-control-sm" id="cboUsuario">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-4">
+                                    <label for="txtImporteIva">Importe IVA</label>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" step="any" class="form-control form-control-sm" id="txtImporteIva" name="Importe IVA" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-5">
+                                    <label for="txtImporteSinIva">Importe sin IVA</label>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" step="any" class="form-control form-control-sm" id="txtImporteSinIva" name="Importe sin IVA" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-12">
+                                    <label for="txtComentario">Comentario</label>
+                                    <input type="text" class="form-control form-control-sm" id="txtComentario" name="Comentario">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnSavePagoProveedor">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/plugins/jquery-ui/jquery-ui.js"></script>
+    <script src="~/plugins/charts/Chart.min.js"></script>
+    <script src="~/plugins/apexcharts/js/apexcharts.min.js"></script>
+    <script src="~/js/views/AdminDashBoard.js"></script>
+
+}

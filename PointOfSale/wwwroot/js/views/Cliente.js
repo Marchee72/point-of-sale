@@ -209,6 +209,21 @@ const openModalCliente = (model = BASIC_MODEL_CLIENTE) => {
         ]
     });
 
+    $('.nav-item').click(function () {
+        // Remove 'active' class from all tabs
+        $('.nav-item').removeClass('active');
+
+        // Add 'active' class to the clicked tab
+        $(this).addClass('active');
+
+        // Hide all tab content
+        $('.tab-content').hide();
+
+        // Show the corresponding tab content
+        var targetId = $(this).attr('id').replace('tab', 'Content'); // Get the ID of the corresponding tab content
+        $('#' + targetId).show();
+    });
+
     $("#modalData").modal("show")
 }
 
@@ -311,6 +326,8 @@ $('#tbMovimientos tbody').on('click', 'button.btn-open-sale', function (event) {
 
     window.open(urlString, '_blank');
 });
+
+
 
 
 $("#tbData tbody").on("click", ".btn-delete", function () {
@@ -418,7 +435,5 @@ $(document).on("click", "button.finalizeSale", function () {
         }
     }).catch((error) => {
         $("#btnFinalizeSale").closest("div.card-body").LoadingOverlay("hide")
-    })
-
-
+    });
 })

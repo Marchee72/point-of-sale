@@ -856,8 +856,10 @@ function showLoading() {
 };
 
 function removeLoading() {
-    document.body.removeChild(document.getElementById("divLoadingFrame"));
-    document.body.removeChild(document.getElementById("styleLoadingWindow"));
+    var loadingFrame = document.getElementById("divLoadingFrame");
+    if (loadingFrame) document.body.removeChild(loadingFrame);
+    var loadingWin = document.getElementById("styleLoadingWindow");
+    if (loadingWin) document.body.removeChild(loadingWin);
 };
 
 function setupPasswordToggle($passwordInput, $toggleButton) {

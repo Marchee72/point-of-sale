@@ -322,7 +322,7 @@ namespace PointOfSale.Business.Services
             var ajustesFacturacion = await _ajusteService.GetAjustesFacturacion(facturaEmitida.IdTienda);
             var refacturada = await Refacturar(facturaEmitida, cuil, facturaEmitida.IdCliente, registrationUser, ajustesFacturacion);
 
-            facturaEmitida.FacturaRefacturada = refacturada.NumeroFacturaString;
+            //facturaEmitida.FacturaRefacturada = refacturada.NumeroFacturaString;
             await _repository.Edit(facturaEmitida);
 
             var sale = await _saleRepository.First(_ => _.IdSale == facturaEmitida.IdSale.Value);
